@@ -4,6 +4,7 @@ import (
 	"BackendGo/src/helpers"
 
 	"gorm.io/gorm"
+	"github.com/asaskevich/govalidator"
 )
 
 var users Users
@@ -32,6 +33,13 @@ func (r *user_repo) FindAll() (*helpers.Response, error) {
 }
 
 func (r *user_repo) Add(data *User) (*helpers.Response, error) {
+
+	_, err := govalidator.ValidateStruct(data)
+	if err != nil {
+		res := response.ResponseJSON(400, users)
+		res.Message = err.Error()
+		return res, nil
+	}
 
 	getEmail := r.db.Where("email = ?", &data.Email).First(&users)
 	if getEmail.RowsAffected != 0 {

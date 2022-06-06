@@ -4,6 +4,7 @@ import (
 	"BackendGo/src/helpers"
 
 	"gorm.io/gorm"
+	"github.com/asaskevich/govalidator"
 )
 
 var vehicles Vehicles
@@ -86,6 +87,13 @@ func (r *vehicle_repo) Popular(rating *int) (*helpers.Response, error) {
 
 func (r *vehicle_repo) Add(data *Vehicle) (*helpers.Response, error) {
 
+	_, err := govalidator.ValidateStruct(data)
+	if err != nil {
+		res := response.ResponseJSON(400, vehicles)
+		res.Message = err.Error()
+		return res, nil
+	}
+	
 	result := r.db.Create(data)
 
 	if result.Error != nil {

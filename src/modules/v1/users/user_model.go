@@ -6,12 +6,12 @@ import (
 
 type User struct {
 	User_ID   uint      `gorm:"primaryKey" json:"user_id"`
-	Name      string    `json:"name"`
-	Gender    string    `json:"gender"`
-	Email     *string    `json:"email"`
-	Phone     string    `json:"phone"`
-	Birth     string    `json:"birth"`
-	Address   string    `json:"address"`
+	Name      string    `json:"name" valid:"type(string), required"`
+	Gender    string    `json:"gender" valid:"type(string), required"`
+	Email     *string   `json:"email" valid:"type(string), required"`
+	Phone     string    `json:"phone" valid:"type(string), required"`
+	Birth     string    `json:"birth" valid:"type(string), required"`
+	Address   string    `json:"address" valid:"type(string), required"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

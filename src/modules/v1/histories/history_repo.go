@@ -2,6 +2,8 @@ package histories
 
 import (
 	"BackendGo/src/helpers"
+
+	"github.com/asaskevich/govalidator"
 	"gorm.io/gorm"
 )
 
@@ -33,10 +35,10 @@ func (r *history_repo) FindAll() (*helpers.Response, error) {
 func (r *history_repo) FindHistoryByID(data *int) (*helpers.Response, error) {
 
 	result := r.db.Raw(
-	" select u.name as users, v.name as vehicle, h.start_date , h.end_date , h.prepayment , h.status " + 
-	" from histories h , users u , vehicles v" + 
-	" where u.user_id = ?" + 
-	" and u.user_id = h.id_user and v.vehicle_id = h.id_vehicle", data).Scan(&results)
+		" select u.name as users, v.name as vehicle, h.start_date , h.end_date , h.prepayment , h.status, h.quantity"+
+			" from histories h , users u , vehicles v"+
+			" where u.user_id = ?"+
+			" and u.user_id = h.id_user and v.vehicle_id = h.id_vehicle", data).Scan(&results)
 
 	if result.RowsAffected < 1 {
 		res := response.ResponseJSON(404, results)
@@ -66,6 +68,13 @@ func (r *history_repo) SortByStart() (*helpers.Response, error) {
 }
 
 func (r *history_repo) Add(data *History) (*helpers.Response, error) {
+
+	_, err := govalidator.ValidateStruct(data)
+	if err != nil {
+		res := response.ResponseJSON(400, histories)
+		res.Message = err.Error()
+		return res, nil
+	}
 
 	result := r.db.Create(data)
 
