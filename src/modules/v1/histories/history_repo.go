@@ -7,9 +7,9 @@ import (
 	"gorm.io/gorm"
 )
 
-var histories Histories
+// var histories Histories
 var response helpers.Response
-var results Results
+// var results Results
 
 type history_repo struct {
 	db *gorm.DB
@@ -20,6 +20,8 @@ func NewRepo(grm *gorm.DB) *history_repo {
 }
 
 func (r *history_repo) FindAll() (*helpers.Response, error) {
+
+	var histories Histories
 
 	result := r.db.Order("history_id desc").Find(&histories)
 
@@ -33,6 +35,8 @@ func (r *history_repo) FindAll() (*helpers.Response, error) {
 }
 
 func (r *history_repo) FindHistoryByID(data *int) (*helpers.Response, error) {
+
+	var results Results
 
 	result := r.db.Raw(
 		" select u.name as users, v.name as vehicle, h.start_date , h.end_date , h.prepayment , h.status, h.quantity"+
@@ -56,6 +60,8 @@ func (r *history_repo) FindHistoryByID(data *int) (*helpers.Response, error) {
 
 func (r *history_repo) SortByStart() (*helpers.Response, error) {
 
+	var histories Histories
+
 	result := r.db.Order("start_date").Find(&histories)
 
 	if result.Error != nil {
@@ -68,6 +74,8 @@ func (r *history_repo) SortByStart() (*helpers.Response, error) {
 }
 
 func (r *history_repo) Add(data *History) (*helpers.Response, error) {
+
+	var histories Histories
 
 	_, err := govalidator.ValidateStruct(data)
 	if err != nil {
@@ -95,6 +103,8 @@ func (r *history_repo) Add(data *History) (*helpers.Response, error) {
 
 func (r *history_repo) Delete(data *int) (*helpers.Response, error) {
 
+	var histories Histories
+
 	getData := r.db.First(&histories, data)
 	if getData.RowsAffected < 1 {
 		res := response.ResponseJSON(404, histories)
@@ -113,6 +123,8 @@ func (r *history_repo) Delete(data *int) (*helpers.Response, error) {
 }
 
 func (r *history_repo) Update(id *int, data *string) (*helpers.Response, error) {
+
+	var histories Histories
 
 	result := r.db.Model(&History{}).Where("history_id = ?", &id).Update("status", &data)
 
