@@ -7,7 +7,7 @@ import (
 	"github.com/asaskevich/govalidator"
 )
 
-var users Users
+// var users Users
 var response helpers.Response
 
 type user_repo struct {
@@ -19,6 +19,8 @@ func NewRepo(grm *gorm.DB) *user_repo {
 }
 
 func (r *user_repo) FindAll() (*helpers.Response, error) {
+
+	var users Users
 
 	result := r.db.Order("user_id desc").Find(&users)
 
@@ -33,6 +35,8 @@ func (r *user_repo) FindAll() (*helpers.Response, error) {
 }
 
 func (r *user_repo) Add(data *User) (*helpers.Response, error) {
+
+	var users Users
 
 	_, err := govalidator.ValidateStruct(data)
 	if err != nil {
@@ -67,6 +71,8 @@ func (r *user_repo) Add(data *User) (*helpers.Response, error) {
 
 func (r *user_repo) Delete(data *int) (*helpers.Response, error) {
 
+	var users Users
+
 	getData := r.db.First(&users, &data)
 	if getData.RowsAffected < 1 {
 		res := response.ResponseJSON(404, users)
@@ -86,7 +92,9 @@ func (r *user_repo) Delete(data *int) (*helpers.Response, error) {
 
 func (r *user_repo) Update(id *int, data *User) (*helpers.Response, error) {
 
-	result := r.db.Model(&User{}).Where("user_id = ?", &id).Updates(&User{Name: data.Name, Address: data.Address})
+	var users Users
+
+	result := r.db.Model(&User{}).Where("user_id = ?", &id).Updates(&User{Name : data.Name, Gender: data.Gender, Email: data.Email, Phone: data.Phone, Birth: data.Birth, Address: data.Address})
 
 	if result.Error != nil {
 		res := response.ResponseJSON(400, users)
