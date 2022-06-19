@@ -24,7 +24,7 @@ func New() (*gorm.DB, error) {
 	dbName := os.Getenv("DB_NAME")
 	password := os.Getenv("DB_PASS")
 
-	config := fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", host, user, password, dbName)
+	config := fmt.Sprintf("host=%s user=%s password=%s dbname=%s", host, user, password, dbName)
 
 	gormDb, err := gorm.Open(postgres.Open(config), &gorm.Config{})
 	if err != nil {
