@@ -7,7 +7,7 @@ import (
 
 	"BackendGo/src/routers"
 
-	"github.com/rs/cors"
+	// "github.com/rs/cors"
 	"github.com/spf13/cobra"
 )
 
@@ -24,16 +24,16 @@ func serve(cmd *cobra.Command, args []string) error {
 	// methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"})
 	// origins := handlers.AllowedOrigins([]string{"http://localhost:8080/"})
 
-	c := cors.New(cors.Options{
-		AllowedHeaders:   []string{"X-Requested-With", "Content-Type", "Authorization"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
-		AllowedOrigins:   []string{"https://www.google.com", "http://localhost:3000/"},
-		AllowCredentials: true,
-		// Enable Debugging for testing, consider disabling in production
-		Debug: true,
-	})
+	// c := cors.New(cors.Options{
+	// 	AllowedHeaders:   []string{"X-Requested-With", "Content-Type", "Authorization"},
+	// 	AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+	// 	AllowedOrigins:   []string{"https://www.google.com", "http://localhost:3000/"},
+	// 	AllowCredentials: true,
+	// 	// Enable Debugging for testing, consider disabling in production
+	// 	Debug: true,
+	// })
 
-	handler := c.Handler(mainRoute)
+	// handler := c.Handler(mainRoute)
 	// mainRoute.Use(mainRoute.W)
 
 	if err == nil {
@@ -43,9 +43,9 @@ func serve(cmd *cobra.Command, args []string) error {
 			addrs += pr
 		}
 
-		log.Println("App running on server " + addrs)
+		log.Println("App running on server " + string(addrs))
 
-		if err := http.ListenAndServe(addrs, handler); err != nil {
+		if err := http.ListenAndServe(addrs, mainRoute); err != nil {
 			return err
 		}
 
