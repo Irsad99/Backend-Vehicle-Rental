@@ -18,7 +18,7 @@ var ServeCmd = &cobra.Command{
 }
 
 func serve(cmd *cobra.Command, args []string) error {
-	mainRoute, err := routers.New()
+	
 
 	// headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	// methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"})
@@ -36,8 +36,8 @@ func serve(cmd *cobra.Command, args []string) error {
 	// handler := c.Handler(mainRoute)
 	// mainRoute.Use(mainRoute.W)
 
-	if err == nil {
-		var addrs string = "127.0.0.1:8080"
+	if mainRoute, err := routers.New(); err == nil {
+		var addrs string = ""
 
 		if pr := os.Getenv("PORT"); pr != "" {
 			addrs = "127.0.0.1:" + pr
