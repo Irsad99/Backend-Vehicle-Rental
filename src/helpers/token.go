@@ -7,7 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var myScretKeys = []byte(os.Getenv("JWT_KETS"))
+var myScretKeys = []byte(os.Getenv("JWT_KEYS"))
 
 type Claims struct {
 	User_Id uint `json:"user_id"`
