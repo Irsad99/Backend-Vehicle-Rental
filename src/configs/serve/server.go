@@ -43,7 +43,7 @@ func serve(cmd *cobra.Command, args []string) error {
 			addrs += pr
 		}
 
-		log.Println("App running on server " + string(addrs))
+		log.Println("App running on " + addrs)
 
 		if err := http.ListenAndServe(addrs, mainRoute); err != nil {
 			return err
