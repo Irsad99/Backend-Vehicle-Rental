@@ -1,0 +1,8 @@
+#### Login ####
+GET  http://localhost:8080/user/ HTTP/1.1
+Content-type: application/json
+
+# {
+#     "email": "lutfi123@gmail.com",
+#     "password": "Lutfi123"
+# }

@@ -1,9 +1,21 @@
 package helpers
 
+import (
+	"encoding/json"
+	"net/http"
+)
+
 type Response struct {
 	Status  int         `json:"status"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
+}
+
+func (res *Response) Send(w http.ResponseWriter) {
+	err := json.NewEncoder(w).Encode(res)
+	if err != nil {
+		w.Write([]byte("Error When Encode respone"))
+	}
 }
 
 func (res *Response) ResponseJSON(status int, data interface{}) *Response {

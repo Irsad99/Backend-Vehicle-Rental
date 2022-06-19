@@ -1,4 +1,4 @@
-package vehicles
+package models
 
 import (
 	"time"
@@ -15,7 +15,7 @@ type Vehicle struct {
 	Category    string    `json:"category" valid:"type(string), required"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
-	Image       string    `json:"image" valid:"type(string), required"`
+	Image       string    `json:"image" valid:"type(string)"`
 	Rating      int       `json:"rating" valid:"type(int), required"`
 }
 

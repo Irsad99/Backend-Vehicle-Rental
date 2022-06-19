@@ -1,13 +1,14 @@
 package users
 
 import (
+	"BackendGo/src/database/gorm/models"
 	"BackendGo/src/helpers"
+	"encoding/json"
+	"errors"
 
 	"gorm.io/gorm"
-	"github.com/asaskevich/govalidator"
 )
 
-// var users Users
 var response helpers.Response
 
 type user_repo struct {
@@ -18,95 +19,92 @@ func NewRepo(grm *gorm.DB) *user_repo {
 	return &user_repo{grm}
 }
 
-func (r *user_repo) FindAll() (*helpers.Response, error) {
+func (repo *user_repo) FindAll() (*models.Users, error) {
 
-	var users Users
+	var users models.Users
 
-	result := r.db.Order("user_id desc").Find(&users)
+	result := repo.db.Order("user_id desc").Find(&users)
 
 	if result.Error != nil {
-		res := response.ResponseJSON(500, users)
-		return res, nil
+		return nil, errors.New("data tidak dapat ditampilkan")
 	}
 
-	res := response.ResponseJSON(200, users)
-
-	return res, nil
+	return &users, nil
 }
 
-func (r *user_repo) Add(data *User) (*helpers.Response, error) {
+func (repo *user_repo) FindByEmail(email string) (*models.User, error) {
 
-	var users Users
+	var users models.User
 
-	_, err := govalidator.ValidateStruct(data)
-	if err != nil {
-		res := response.ResponseJSON(400, users)
-		res.Message = err.Error()
-		return res, nil
+	result := repo.db.First(&users, "email = ?", email)
+	if result.RowsAffected < 1 {
+		err := json.Unmarshal([]byte("email"), &users)
+		return nil, err
 	}
 
-	getEmail := r.db.Where("email = ?", &data.Email).First(&users)
+	if result.Error != nil {
+		err := json.Unmarshal([]byte("Tidak dapat mengambil data"), &users)
+		return nil, err
+	}
+
+	return &users, nil
+}
+
+func (repo *user_repo) Add(data *models.User) (*models.User, error) {
+
+	var users models.User
+
+	getEmail := repo.db.Where("email = ?", &data.Email).First(&users)
 	if getEmail.RowsAffected != 0 {
-		res := response.ResponseJSON(300, users)
-		return res, nil
+		return nil, errors.New("email sudah terdaftar")
 	}
 
-	result := r.db.Create(data)
+	result := repo.db.Create(data)
 
 	if result.Error != nil {
-		res := response.ResponseJSON(400, users)
-		return res, nil
+		return nil, errors.New("gagal menambahkan data")
 	}
 
-	getData := r.db.First(&users, &data.User_ID)
+	getData := repo.db.First(&users, &data.User_ID)
 	if getData.RowsAffected < 1 {
-		res := response.ResponseJSON(404, users)
-		return res, nil
+		return nil, errors.New("email sudah terdaftar")
 	}
 
-	res := response.ResponseJSON(201, users)
-
-	return res, nil
+	return &users, nil
 }
 
-func (r *user_repo) Delete(data *int) (*helpers.Response, error) {
+func (repo *user_repo) Delete(id int) (*models.User, error) {
 
-	var users Users
+	var users models.User
 
-	getData := r.db.First(&users, &data)
+	getData := repo.db.First(&users, id)
 	if getData.RowsAffected < 1 {
-		res := response.ResponseJSON(404, users)
-		return res, nil
+		return nil, errors.New("data tidak ditemukan")
 	}
 
-	result := r.db.Delete(&User{}, &data)
+	result := repo.db.Delete(&models.User{}, &id)
 
 	if result.Error != nil {
-		res := response.ResponseJSON(400, users)
-		return res, nil
+		return nil, errors.New("gagal menghapus data")
 	}
 
-	res := response.ResponseJSON(204, users)
-	return res, nil
+	return &users, nil
 }
 
-func (r *user_repo) Update(id *int, data *User) (*helpers.Response, error) {
+func (repo *user_repo) Update(id int, data *models.User) (*models.User, error) {
 
-	var users Users
+	var users *models.User
 
-	result := r.db.Model(&User{}).Where("user_id = ?", &id).Updates(&User{Name : data.Name, Gender: data.Gender, Email: data.Email, Phone: data.Phone, Birth: data.Birth, Address: data.Address})
+	result := repo.db.Model(&models.User{}).Where("user_id = ?", &id).Updates(&models.User{Name: data.Name, Gender: data.Gender, Email: data.Email, Phone: data.Phone, Birth: data.Birth, Address: data.Address, Password: data.Password})
 
 	if result.Error != nil {
-		res := response.ResponseJSON(400, users)
-		return res, nil
+		return nil, errors.New("gagal meng-update data")
 	}
 
-	getData := r.db.First(&users, &id)
+	getData := repo.db.First(&users, id)
 	if getData.RowsAffected < 1 {
-		res := response.ResponseJSON(404, users)
-		return res, nil
+		return nil, errors.New("data tidak ditemukan")
 	}
 
-	res := response.ResponseJSON(201, users)
-	return res, nil
+	return users, nil
 }

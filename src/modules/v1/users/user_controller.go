@@ -2,81 +2,95 @@ package users
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 	"strconv"
+
+	"BackendGo/src/database/gorm/models"
+	"BackendGo/src/interfaces"
 
 	"github.com/gorilla/mux"
 )
 
 type user_ctrl struct {
-	repo *user_repo
+	svc interfaces.UserService
 }
 
-func NewCtrl(rep *user_repo) *user_ctrl {
-	return &user_ctrl{rep}
+func NewCtrl(ctrl interfaces.UserService) *user_ctrl {
+	return &user_ctrl{ctrl}
 }
 
-func (rep *user_ctrl) GetAll(w http.ResponseWriter, r *http.Request) {
+func (ctrl *user_ctrl) GetAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	data, err := rep.repo.FindAll()
+	data, err := ctrl.svc.FindAll()
 	if err != nil {
-		fmt.Fprint(w, err.Error())
+		response.ResponseJSON(400, "Tidak dapat menampilkan data").Send(w)
 	}
 
 	json.NewEncoder(w).Encode(data)
 }
 
-func (rep *user_ctrl) AddData(w http.ResponseWriter, r *http.Request) {
+func (ctrl *user_ctrl) AddData(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var data User
+	var data models.User
 	json.NewDecoder(r.Body).Decode(&data)
 
-	result, err := rep.repo.Add(&data)
+	result, err := ctrl.svc.Save(&data)
 	if err != nil {
-		fmt.Fprint(w, err.Error())
+		response.ResponseJSON(400, "Tidak dapat menambahkan data").Send(w)
 	}
 
 	json.NewEncoder(w).Encode(&result)
 }
 
-func (rep *user_ctrl) Delete(w http.ResponseWriter, r *http.Request) {
+func (ctrl *user_ctrl) Delete(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var data = mux.Vars(r)
 	id, err := strconv.Atoi(data["id"])
 
 	if err != nil {
-		log.Fatalf("Tidak bisa mengubah dari string ke int.  %v", err)
+		response.ResponseJSON(400, "Tidak dapat merubah dari string ke int").Send(w)
 	}
 
-	result, err := rep.repo.Delete(&id)
+	result, err := ctrl.svc.Delete(id)
 	if err != nil {
-		fmt.Fprint(w, err.Error())
+		response.ResponseJSON(400, "Tidak dapat menghapus data").Send(w)
 	}
 
 	json.NewEncoder(w).Encode(&result)
 }
 
-func (rep *user_ctrl) Update(w http.ResponseWriter, r *http.Request) {
+func (ctrl *user_ctrl) Update(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var dataId = r.URL.Query()
-	var data User
+	var data models.User
+	var reqId = r.Header.Get("id")
+	var reqRole = r.Header.Get("role")
 
 	json.NewDecoder(r.Body).Decode(&data)
 
 	id, err := strconv.Atoi(dataId["id"][0])
 	if err != nil {
-		log.Fatalf("Tidak bisa mengubah dari string ke int.  %v", err)
+		response.ResponseJSON(400, "Tidak dapat merubah dari string ke int").Send(w)
+		return
 	}
 
-	result, err := rep.repo.Update(&id, &data)
+	result, err := ctrl.svc.Update(id, &data)
 	if err != nil {
-		fmt.Fprint(w, err.Error())
+		response.ResponseJSON(400, "Tidak dapat meng-update data").Send(w)
+	}
+
+	if reqId != dataId["id"][0] {
+		if reqRole == "admin" {
+			json.NewEncoder(w).Encode(&result)
+			return
+		} else {
+			response.ResponseJSON(401, "Akses Tidak Diijinkan").Send(w)
+			return
+		}
 	}
 
 	json.NewEncoder(w).Encode(&result)

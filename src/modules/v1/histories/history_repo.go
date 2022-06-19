@@ -1,15 +1,14 @@
 package histories
 
 import (
+	"BackendGo/src/database/gorm/models"
 	"BackendGo/src/helpers"
+	"errors"
 
-	"github.com/asaskevich/govalidator"
 	"gorm.io/gorm"
 )
 
-// var histories Histories
 var response helpers.Response
-// var results Results
 
 type history_repo struct {
 	db *gorm.DB
@@ -19,126 +18,103 @@ func NewRepo(grm *gorm.DB) *history_repo {
 	return &history_repo{grm}
 }
 
-func (r *history_repo) FindAll() (*helpers.Response, error) {
+func (repo *history_repo) FindAll() (*models.Histories, error) {
 
-	var histories Histories
+	var histories models.Histories
 
-	result := r.db.Order("history_id desc").Find(&histories)
+	result := repo.db.Order("history_id desc").Find(&histories)
 
 	if result.Error != nil {
-		res := response.ResponseJSON(500, histories)
-		return res, nil
+		return nil, errors.New("data tidak dapat ditampilkan")
 	}
 
-	res := response.ResponseJSON(200, histories)
-	return res, nil
+	return &histories, nil
 }
 
-func (r *history_repo) FindHistoryByID(data *int) (*helpers.Response, error) {
+func (repo *history_repo) FindHistoryByID(id int) (*models.Results, error) {
 
-	var results Results
+	var results models.Results
 
-	result := r.db.Raw(
+	result := repo.db.Raw(
 		" select u.name as users, v.name as vehicle, h.start_date , h.end_date , h.prepayment , h.status, h.quantity"+
 			" from histories h , users u , vehicles v"+
 			" where u.user_id = ?"+
-			" and u.user_id = h.id_user and v.vehicle_id = h.id_vehicle", data).Scan(&results)
+			" and u.user_id = h.id_user and v.vehicle_id = h.id_vehicle", id).Scan(&results)
 
 	if result.RowsAffected < 1 {
-		res := response.ResponseJSON(404, results)
-		return res, nil
+		return nil, errors.New("data tidak ditemukan")
 	}
 
 	if result.Error != nil {
-		res := response.ResponseJSON(500, results)
-		return res, nil
+		return nil, errors.New("data tidak dapat ditampilkan")
 	}
 
-	res := response.ResponseJSON(200, results)
-	return res, nil
+	return &results, nil
 }
 
-func (r *history_repo) SortByStart() (*helpers.Response, error) {
+func (repo *history_repo) SortByStart() (*models.Histories, error) {
 
-	var histories Histories
+	var histories models.Histories
 
-	result := r.db.Order("start_date").Find(&histories)
+	result := repo.db.Order("start_date").Find(&histories)
 
 	if result.Error != nil {
-		res := response.ResponseJSON(500, histories)
-		return res, nil
+		return nil, errors.New("data tidak dapat ditampilkan")
 	}
 
-	res := response.ResponseJSON(200, histories)
-	return res, nil
+	return &histories, nil
 }
 
-func (r *history_repo) Add(data *History) (*helpers.Response, error) {
+func (repo *history_repo) Add(data *models.History) (*models.History, error) {
 
-	var histories Histories
+	var histories models.History
 
-	_, err := govalidator.ValidateStruct(data)
-	if err != nil {
-		res := response.ResponseJSON(400, histories)
-		res.Message = err.Error()
-		return res, nil
-	}
-
-	result := r.db.Create(data)
+	result := repo.db.Create(data)
 
 	if result.Error != nil {
-		res := response.ResponseJSON(400, histories)
-		return res, nil
+		return nil, errors.New("gagal menambahkan data")
 	}
 
-	getData := r.db.First(&histories, &data.History_Id)
+	getData := repo.db.First(&histories, &data.History_Id)
 	if getData.RowsAffected < 1 {
-		res := response.ResponseJSON(404, histories)
-		return res, nil
+		return nil, errors.New("data tidak ditemukan")
 	}
 
-	res := response.ResponseJSON(201, histories)
-	return res, nil
+	return &histories, nil
 }
 
-func (r *history_repo) Delete(data *int) (*helpers.Response, error) {
+func (repo *history_repo) Delete(id int) (*models.History, error) {
 
-	var histories Histories
+	var histories models.History
 
-	getData := r.db.First(&histories, data)
+	getData := repo.db.First(&histories, id)
 	if getData.RowsAffected < 1 {
-		res := response.ResponseJSON(404, histories)
-		return res, nil
+		return nil, errors.New("data tidak ditemukan")
 	}
 
-	result := r.db.Delete(&History{}, data)
+	result := repo.db.Delete(&models.History{}, id)
 
 	if result.Error != nil {
-		res := response.ResponseJSON(400, histories)
-		return res, nil
+		return nil, errors.New("gagal menghapus data")
 	}
 
-	res := response.ResponseJSON(204, histories)
-	return res, nil
+	return &histories, nil
 }
 
-func (r *history_repo) Update(id *int, data *string) (*helpers.Response, error) {
+func (repo *history_repo) Update(id int, status string) (*models.History, error) {
 
-	var histories Histories
+	var histories models.History
 
-	result := r.db.Model(&History{}).Where("history_id = ?", &id).Update("status", &data)
+	result := repo.db.Model(&models.History{}).Where("history_id = ?", id).Update("status", status)
 
 	if result.Error != nil {
-		res := response.ResponseJSON(400, histories)
-		return res, nil
+		return nil, errors.New("gagal meng-update data")
 	}
 
-	getData := r.db.First(&histories, &id)
+	getData := repo.db.First(&histories, &id)
 	if getData.RowsAffected < 1 {
-		res := response.ResponseJSON(404, histories)
-		return res, nil
+		return nil, errors.New("data tidak ditemukan")
 	}
 
-	res := response.ResponseJSON(201, histories)
-	return res, nil
+	return &histories, nil
 }

@@ -8,20 +8,22 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"BackendGo/src/database/gorm/models"
+	"BackendGo/src/interfaces"
 )
 
 type vehicle_ctrl struct {
-	repo *vehicle_repo
+	svc interfaces.VehicleService
 }
 
-func NewCtrl(rep *vehicle_repo) *vehicle_ctrl {
-	return &vehicle_ctrl{rep}
+func NewCtrl(ctrl interfaces.VehicleService) *vehicle_ctrl {
+	return &vehicle_ctrl{ctrl}
 }
 
-func (rep *vehicle_ctrl) GetAll(w http.ResponseWriter, r *http.Request) {
+func (ctrl *vehicle_ctrl) GetAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	data, err := rep.repo.FindAll()
+	data, err := ctrl.svc.FindAll()
 	if err != nil {
 		fmt.Fprint(w, err.Error())
 	}
@@ -29,14 +31,14 @@ func (rep *vehicle_ctrl) GetAll(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
-func (rep *vehicle_ctrl) SearchByType(w http.ResponseWriter, r *http.Request) {
+func (ctrl *vehicle_ctrl) SearchByType(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var data = r.URL.Query()
 	dataType := string(data["category"][0])
 	dataLocation := string(data["location"][0])
 
-	result, err := rep.repo.Search(&dataType, &dataLocation)
+	result, err := ctrl.svc.Search(&dataType, &dataLocation)
 	if err != nil {
 		fmt.Fprint(w, err.Error())
 	}
@@ -44,7 +46,7 @@ func (rep *vehicle_ctrl) SearchByType(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(result)
 }
 
-func (rep *vehicle_ctrl) SortByPrice(w http.ResponseWriter, r *http.Request) {
+func (ctrl *vehicle_ctrl) SortByPrice(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var dataPrice = r.URL.Query()
@@ -53,7 +55,7 @@ func (rep *vehicle_ctrl) SortByPrice(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("Tidak bisa mengubah dari string ke int.  %v", err)
 	}
 
-	data, err := rep.repo.SortByPrice(&price)
+	data, err := ctrl.svc.SortByPrice(price)
 	if err != nil {
 		fmt.Fprint(w, err.Error())
 	}
@@ -61,7 +63,7 @@ func (rep *vehicle_ctrl) SortByPrice(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
-func (rep *vehicle_ctrl) PopularVehicle(w http.ResponseWriter, r *http.Request) {
+func (ctrl *vehicle_ctrl) PopularVehicle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var dataRating = r.URL.Query()
@@ -70,7 +72,7 @@ func (rep *vehicle_ctrl) PopularVehicle(w http.ResponseWriter, r *http.Request) 
 		log.Fatalf("Tidak bisa mengubah dari string ke int.  %v", err)
 	}
 
-	data, err := rep.repo.Popular(&rating)
+	data, err := ctrl.svc.Popular(rating)
 	if err != nil {
 		fmt.Fprint(w, err.Error())
 	}
@@ -78,13 +80,13 @@ func (rep *vehicle_ctrl) PopularVehicle(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(data)
 }
 
-func (rep *vehicle_ctrl) AddData(w http.ResponseWriter, r *http.Request) {
+func (ctrl *vehicle_ctrl) AddData(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var data Vehicle
+	var data models.Vehicle
 	json.NewDecoder(r.Body).Decode(&data)
 
-	result, err := rep.repo.Add(&data)
+	result, err := ctrl.svc.Save(&data)
 	if err != nil {
 		fmt.Fprint(w, err.Error())
 	}
@@ -92,7 +94,7 @@ func (rep *vehicle_ctrl) AddData(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&result)
 }
 
-func (rep *vehicle_ctrl) Delete(w http.ResponseWriter, r *http.Request) {
+func (ctrl *vehicle_ctrl) Delete(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var data = mux.Vars(r)
@@ -101,7 +103,7 @@ func (rep *vehicle_ctrl) Delete(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("Tidak bisa mengubah dari string ke int.  %v", err)
 	}
 
-	result, err := rep.repo.Delete(&id)
+	result, err := ctrl.svc.Delete(id)
 	if err != nil {
 		fmt.Fprint(w, err.Error())
 	}
@@ -109,11 +111,23 @@ func (rep *vehicle_ctrl) Delete(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&result)
 }
 
-func (rep *vehicle_ctrl) Update(w http.ResponseWriter, r *http.Request) {
+func (ctrl *vehicle_ctrl) Update(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var data Vehicle
+	var data models.Vehicle
 	var dataId = r.URL.Query()
+	var reqId = r.Header.Get("id")
+	var reqRole = r.Header.Get("role")
+	
+	if reqId != dataId["id"][0]{
+		if reqRole == "admin" {
+			return
+		} else {
+			response.ResponseJSON(401, "Akses Tidak Diijinkan").Send(w)
+			return
+		}
+	}
+
 	json.NewDecoder(r.Body).Decode(&data)
 
 	id, err := strconv.Atoi(dataId["id"][0])
@@ -121,7 +135,7 @@ func (rep *vehicle_ctrl) Update(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("Tidak bisa mengubah dari string ke int %v", err)
 	}
 
-	result, err := rep.repo.Update(&id, &data)
+	result, err := ctrl.svc.Update(id, &data)
 	if err != nil {
 		fmt.Fprint(w, err.Error())
 	}
