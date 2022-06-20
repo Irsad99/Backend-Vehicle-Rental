@@ -1,1 +1,1 @@
-web: sudo ./build/BackendGo server
+web: sudo chmod 666 /build/BackendGo server
