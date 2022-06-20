@@ -1,1 +1,1 @@
-web: ./build/BackendGo server
+web: sudo ./build/BackendGo server
