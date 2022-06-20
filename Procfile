@@ -1,1 +1,1 @@
-web: ./build/BackendGo server
+web: ./bin/BackendGo server
