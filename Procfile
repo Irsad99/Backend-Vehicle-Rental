@@ -1,1 +1,1 @@
-web: ./build/BackendGo server
+web: go run main.go server
