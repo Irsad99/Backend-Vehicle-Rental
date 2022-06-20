@@ -25,7 +25,7 @@ func (svc *user_service) FindAll() (*helpers.Response, error) {
 		return res, nil
 	}
 
-	res := response.ResponseJSON(200, len(*result))
+	res := response.ResponseJSON(200, result)
 	return res, nil
 }
 
