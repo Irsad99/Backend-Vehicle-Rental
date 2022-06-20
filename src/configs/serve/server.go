@@ -37,7 +37,7 @@ func serve(cmd *cobra.Command, args []string) error {
 	// mainRoute.Use(mainRoute.W)
 
 	if mainRoute, err := routers.New(); err == nil {
-		var addrs string = "127.0.0.1:8080"
+		var addrs string = ""
 
 		if pr := os.Getenv("PORT"); pr != "" {
 			addrs = "127.0.0.1:" + pr
