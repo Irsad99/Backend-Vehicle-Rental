@@ -1,4 +1,4 @@
-APP = backendgo
+APP = BackendGo
 APP_EXE = "bin/$(APP)"
 
 build:
