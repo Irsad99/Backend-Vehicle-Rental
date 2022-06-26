@@ -42,7 +42,7 @@ func serve(cmd *cobra.Command, args []string) error {
 		handler := c.Handler(mainRoute)
 
 		if pr := os.Getenv("PORT"); pr != "" {
-			addrs = "127.0.0.1:" + pr
+			addrs = ":" + pr
 		}
 
 		log.Println("App running on " + addrs)
