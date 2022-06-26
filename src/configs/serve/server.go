@@ -32,8 +32,6 @@ func serve(cmd *cobra.Command, args []string) error {
 		// Enable Debugging for testing, consider disabling in production
 		Debug: true,
 	})
-
-	
 	// mainRoute.Use(mainRoute)
 
 	if mainRoute, err := routers.New(); err == nil {
@@ -45,7 +43,7 @@ func serve(cmd *cobra.Command, args []string) error {
 			addrs = ":" + pr
 		}
 
-		log.Println("App running on " + addrs)
+		log.Println("App running on 127.0.0.1" + addrs)
 
 		if err := http.ListenAndServe(addrs, handler); err != nil {
 			return err
