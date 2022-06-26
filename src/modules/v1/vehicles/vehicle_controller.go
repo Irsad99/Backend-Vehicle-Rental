@@ -114,19 +114,10 @@ func (ctrl *vehicle_ctrl) Delete(w http.ResponseWriter, r *http.Request) {
 func (ctrl *vehicle_ctrl) Update(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var data models.Vehicle
 	var dataId = r.URL.Query()
+	var data models.Vehicle
 	var reqId = r.Header.Get("id")
 	var reqRole = r.Header.Get("role")
-	
-	if reqId != dataId["id"][0]{
-		if reqRole == "admin" {
-			return
-		} else {
-			response.ResponseJSON(401, "Akses Tidak Diijinkan").Send(w)
-			return
-		}
-	}
 
 	json.NewDecoder(r.Body).Decode(&data)
 
@@ -138,6 +129,15 @@ func (ctrl *vehicle_ctrl) Update(w http.ResponseWriter, r *http.Request) {
 	result, err := ctrl.svc.Update(id, &data)
 	if err != nil {
 		fmt.Fprint(w, err.Error())
+	}
+
+	if reqId != dataId["id"][0]{
+		if reqRole == "admin" {
+			return
+		} else {
+			response.ResponseJSON(401, "Akses Tidak Diijinkan").Send(w)
+			return
+		}
 	}
 
 	json.NewEncoder(w).Encode(&result)

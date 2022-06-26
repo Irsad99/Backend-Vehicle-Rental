@@ -112,6 +112,8 @@ func (svc *vehicle_service) Delete(id int) (*helpers.Response, error) {
 
 func (svc *vehicle_service) Update(id int, data *models.Vehicle) (*helpers.Response, error) {
 
+	var response helpers.Response
+
 	_, err := govalidator.ToInt(id)
 	if err != nil {
 		res := response.ResponseJSON(400, "Id yang anda masukan salah")
@@ -121,12 +123,12 @@ func (svc *vehicle_service) Update(id int, data *models.Vehicle) (*helpers.Respo
 
 	result, err := svc.repo.Update(id, data)
 	if err != nil {
-		res := response.ResponseJSON(400, result)
+		res := response.ResponseJSON(400, &result)
 		res.Message = err.Error()
 		return res, nil
 	}
 
-	res := response.ResponseJSON(200, result)
+	res := response.ResponseJSON(200, &result)
 
 	return res, nil
 }

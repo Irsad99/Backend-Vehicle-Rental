@@ -95,7 +95,7 @@ func (repo *user_repo) Update(id int, data *models.User) (*models.User, error) {
 
 	var users *models.User
 
-	result := repo.db.Model(&models.User{}).Where("user_id = ?", &id).Updates(&models.User{Name: data.Name, Gender: data.Gender, Email: data.Email, Phone: data.Phone, Birth: data.Birth, Address: data.Address, Password: data.Password})
+	result := repo.db.Model(&models.User{}).Where("user_id = ?", id).Updates(&models.User{Name: data.Name, Gender: data.Gender, Email: data.Email, Phone: data.Phone, Birth: data.Birth, Address: data.Address, Password: data.Password})
 
 	if result.Error != nil {
 		return nil, errors.New("gagal meng-update data")

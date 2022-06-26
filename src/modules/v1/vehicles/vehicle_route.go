@@ -15,10 +15,10 @@ func New(rt *mux.Router, db *gorm.DB) {
 	ctrl := NewCtrl(svc)
 
 	route.HandleFunc("/", ctrl.GetAll).Methods("GET")
-	route.HandleFunc("/search", middleware.Do(ctrl.SearchByType, "user", middleware.CheckAuth)).Methods("GET")
-	route.HandleFunc("/price", middleware.Do(ctrl.SortByPrice, "user", middleware.CheckAuth)).Methods("GET")
-	route.HandleFunc("/popular", middleware.Do(ctrl.PopularVehicle, "user", middleware.CheckAuth)).Methods("GET")
-	route.HandleFunc("/register", middleware.Do(ctrl.AddData, "user", middleware.CheckAuth)).Methods("POST")
+	route.HandleFunc("/search", ctrl.SearchByType).Methods("GET")
+	route.HandleFunc("/price", ctrl.SortByPrice).Methods("GET")
+	route.HandleFunc("/popular", ctrl.PopularVehicle).Methods("GET")
+	route.HandleFunc("/register", ctrl.AddData).Methods("POST")
 	route.HandleFunc("/delete/{id}", middleware.Do(ctrl.Delete, "admin", middleware.CheckAuth)).Methods("DELETE")
 	route.HandleFunc("/update", middleware.Do(ctrl.Update, "user", middleware.CheckAuth)).Methods("PUT")
 }

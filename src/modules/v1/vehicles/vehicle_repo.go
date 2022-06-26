@@ -9,7 +9,6 @@ import (
 )
 
 var response helpers.Response
-
 type vehicle_repo struct {
 	db *gorm.DB
 }
@@ -122,16 +121,17 @@ func (repo *vehicle_repo) Update(id int, data *models.Vehicle) (*models.Vehicle,
 
 	var vehicles models.Vehicle
 
-	result := repo.db.Model(&models.Vehicle{}).Where("vehicle_id = ?", &id).Updates(&models.Vehicle{Name: data.Name, Location: data.Location, Description: data.Description, Price: data.Price, Status: data.Status, Stock: data.Stock, Category: data.Category, Image: data.Image, Rating: data.Rating})
+	result := repo.db.Model(&models.Vehicle{}).Where("vehicle_id = ?", id).Updates(&models.Vehicle{Name: data.Name, Location: data.Location, Description: data.Description, Price: data.Price, Status: data.Status, Stock: data.Stock, Category: data.Category, Image: data.Image, Rating: data.Rating})
 
 	if result.Error != nil {
 		return nil, errors.New("gagal meng-update data")
 	}
 
-	getdata := repo.db.First(&vehicles, &id)
-	if getdata.RowsAffected < 1 {
+	getData := repo.db.First(&vehicles, id)
+	if getData.RowsAffected == 1 {
 		return nil, errors.New("data tidak ditemukan")
 	}
 
 	return &vehicles, nil
 }
+

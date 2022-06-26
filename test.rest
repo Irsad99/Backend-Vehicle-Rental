@@ -1,8 +1,23 @@
-#### Login ####
-POST https://myrentalbackend.herokuapp.com/auth/ HTTP/1.1
+#### Register ####
+POST https://myrentalbackend.herokuapp.com/user/register HTTP/1.1
 Content-type: application/json
 
 {
-    "email": "lutfi123@gmail.com",
+    "name" : "Bagus Fajar",
+    "gender" : "Laki-Laki",
+    "email" : "bagus123m@gmail.com",
+    "phone" : "085233123456",
+    "address" : "Sampang",
+    "birth" : "1999-08-23",
+    "password" : "Bagus123",
+    "role" : "user"
+}
+
+#### Login ####
+POST https://myrentalbackend.herokuapp.com/auth/ HTTP/1.1
+Content-Type: : application/json
+
+{
+    "email": "lutfi123m@gmail.com",
     "password": "Lutfi123"
 }

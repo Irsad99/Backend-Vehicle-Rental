@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewToke (t *testing.T) {
+func TestNewToken (t *testing.T) {
 
 	result := NewToken(1, "irsadmoh01@gmail.com", "user")
 
