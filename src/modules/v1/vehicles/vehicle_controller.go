@@ -3,13 +3,13 @@ package vehicles
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/mux"
 	"BackendGo/src/database/gorm/models"
 	"BackendGo/src/interfaces"
+
+	"github.com/gorilla/mux"
 )
 
 type vehicle_ctrl struct {
@@ -37,7 +37,7 @@ func (ctrl *vehicle_ctrl) GetByID(w http.ResponseWriter, r *http.Request) {
 	var dataID = r.URL.Query()
 	id, err := strconv.Atoi(dataID["id"][0])
 	if err != nil {
-		log.Fatalf("Tidak bisa mengubah dari string ke int.  %v", err)
+		fmt.Fprint(w, err.Error())
 	}
 
 	data, err := ctrl.svc.FindByID(id)
@@ -69,7 +69,7 @@ func (ctrl *vehicle_ctrl) SortByPrice(w http.ResponseWriter, r *http.Request) {
 	var dataPrice = r.URL.Query()
 	price, err := strconv.Atoi(dataPrice["price"][0])
 	if err != nil {
-		log.Fatalf("Tidak bisa mengubah dari string ke int.  %v", err)
+		fmt.Fprint(w, err.Error())
 	}
 
 	data, err := ctrl.svc.SortByPrice(price)
@@ -86,7 +86,7 @@ func (ctrl *vehicle_ctrl) PopularVehicle(w http.ResponseWriter, r *http.Request)
 	var dataRating = r.URL.Query()
 	rating, err := strconv.Atoi(dataRating["rating"][0])
 	if err != nil {
-		log.Fatalf("Tidak bisa mengubah dari string ke int.  %v", err)
+		fmt.Fprint(w, err.Error())
 	}
 
 	data, err := ctrl.svc.Popular(rating)
@@ -117,7 +117,7 @@ func (ctrl *vehicle_ctrl) Delete(w http.ResponseWriter, r *http.Request) {
 	var data = mux.Vars(r)
 	id, err := strconv.Atoi(data["id"])
 	if err != nil {
-		log.Fatalf("Tidak bisa mengubah dari string ke int.  %v", err)
+		fmt.Fprint(w, err.Error())
 	}
 
 	result, err := ctrl.svc.Delete(id)
@@ -140,7 +140,7 @@ func (ctrl *vehicle_ctrl) Update(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(dataId["id"][0])
 	if err != nil {
-		log.Fatalf("Tidak bisa mengubah dari string ke int %v", err)
+		fmt.Fprint(w, err.Error())
 	}
 
 	result, err := ctrl.svc.Update(id, &data)
@@ -148,7 +148,7 @@ func (ctrl *vehicle_ctrl) Update(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err.Error())
 	}
 
-	if reqId != dataId["id"][0]{
+	if reqId != dataId["id"][0] {
 		if reqRole == "admin" {
 			return
 		} else {
