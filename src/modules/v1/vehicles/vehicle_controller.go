@@ -31,6 +31,23 @@ func (ctrl *vehicle_ctrl) GetAll(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
+func (ctrl *vehicle_ctrl) GetByID(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var dataID = r.URL.Query()
+	id, err := strconv.Atoi(dataID["id"][0])
+	if err != nil {
+		log.Fatalf("Tidak bisa mengubah dari string ke int.  %v", err)
+	}
+
+	data, err := ctrl.svc.FindByID(id)
+	if err != nil {
+		fmt.Fprint(w, err.Error())
+	}
+
+	json.NewEncoder(w).Encode(data)
+}
+
 func (ctrl *vehicle_ctrl) SearchByType(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 

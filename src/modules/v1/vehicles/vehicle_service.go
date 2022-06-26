@@ -29,6 +29,19 @@ func (svc *vehicle_service) FindAll() (*helpers.Response, error) {
 	return res, nil
 }
 
+func (svc *vehicle_service) FindByID(id int) (*helpers.Response, error) {
+
+	result, err := svc.repo.FindByID(id)
+	if err != nil {
+		res := response.ResponseJSON(400, result)
+		res.Message = err.Error()
+		return res, nil
+	}
+
+	res := response.ResponseJSON(200, result)
+	return res, nil
+}
+
 func (svc *vehicle_service) Search(category ...interface{}) (*helpers.Response, error) {
 
 	result, err := svc.repo.Search(category[0], category[1])

@@ -30,6 +30,19 @@ func (repo *vehicle_repo) FindAll() (*models.Vehicles, error) {
 	return &vehicles, nil
 }
 
+func (repo *vehicle_repo) FindByID(id int) (*models.Vehicle, error) {
+
+	var vehicles models.Vehicle
+
+	result := repo.db.First(&vehicles, id)
+
+	if result.Error != nil {
+		return nil, errors.New("data tidak dapat ditampilkan")
+	}
+
+	return &vehicles, nil
+}
+
 func (repo *vehicle_repo) Search(category ...interface{}) (*models.Vehicles, error) {
 
 	var vehicles models.Vehicles

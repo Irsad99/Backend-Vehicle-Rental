@@ -7,6 +7,7 @@ import (
 
 type VehicleRepo interface{
 	FindAll() (*models.Vehicles, error)
+	FindByID(id int) (*models.Vehicle, error)
 	Search(category ...interface{}) (*models.Vehicles, error)
 	SortByPrice(price int) (*models.Vehicles, error)
 	Popular(rating int) (*models.Vehicles, error)
@@ -17,6 +18,7 @@ type VehicleRepo interface{
 
 type VehicleService interface {
 	FindAll() (*helpers.Response, error)
+	FindByID(id int) (*helpers.Response, error)
 	Search(category ...interface{}) (*helpers.Response, error)
 	SortByPrice(price int) (*helpers.Response, error)
 	Popular(rating int) (*helpers.Response, error)

@@ -15,6 +15,7 @@ func New(rt *mux.Router, db *gorm.DB) {
 	ctrl := NewCtrl(svc)
 
 	route.HandleFunc("/", ctrl.GetAll).Methods("GET")
+	route.HandleFunc("/product", ctrl.GetByID).Methods("GET")
 	route.HandleFunc("/search", ctrl.SearchByType).Methods("GET")
 	route.HandleFunc("/price", ctrl.SortByPrice).Methods("GET")
 	route.HandleFunc("/popular", ctrl.PopularVehicle).Methods("GET")
