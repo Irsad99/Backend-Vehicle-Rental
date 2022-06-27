@@ -18,7 +18,6 @@ var ServeCmd = &cobra.Command{
 }
 
 func serve(cmd *cobra.Command, args []string) error {
-	
 
 	// headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	// methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"})
@@ -32,10 +31,11 @@ func serve(cmd *cobra.Command, args []string) error {
 		// Enable Debugging for testing, consider disabling in production
 		Debug: true,
 	})
+
 	// mainRoute.Use(mainRoute)
 
 	if mainRoute, err := routers.New(); err == nil {
-		var addrs string = "127.0.0.1:8080"
+		var addrs string = ""
 
 		handler := c.Handler(mainRoute)
 

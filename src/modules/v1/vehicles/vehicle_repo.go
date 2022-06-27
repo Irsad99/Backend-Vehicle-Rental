@@ -77,6 +77,23 @@ func (repo *vehicle_repo) SortByPrice(price int) (*models.Vehicles, error) {
 	return &vehicles, nil
 }
 
+func (repo *vehicle_repo) SortByType(category string) (*models.Vehicles, error) {
+
+	var vehicles models.Vehicles
+
+	result := repo.db.Order("vehicle_id desc").Where("category = ?", category).Find(&vehicles)
+
+	if result.RowsAffected < 1 {
+		return nil, errors.New("data tidak ditemukan")
+	}
+
+	if result.Error != nil {
+		return nil, errors.New("data tidak dapat ditampilkan")
+	}
+
+	return &vehicles, nil
+}
+
 func (repo *vehicle_repo) Popular(rating int) (*models.Vehicles, error) {
 
 	var vehicles models.Vehicles

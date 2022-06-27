@@ -68,6 +68,19 @@ func (svc *vehicle_service) SortByPrice(price int) (*helpers.Response, error) {
 	return res, nil
 }
 
+func (svc *vehicle_service) SortByType(category string) (*helpers.Response, error) {
+
+	result, err := svc.repo.SortByType(category)
+	if err != nil {
+		res := response.ResponseJSON(400, result)
+		res.Message = err.Error()
+		return res, nil
+	}
+
+	res := response.ResponseJSON(200, result)
+	return res, nil
+}
+
 func (svc *vehicle_service) Popular(rating int) (*helpers.Response, error) {
 
 	result, err := svc.repo.Popular(rating)

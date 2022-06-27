@@ -18,6 +18,7 @@ func New(rt *mux.Router, db *gorm.DB) {
 	route.HandleFunc("/product", ctrl.GetByID).Methods("GET")
 	route.HandleFunc("/search", ctrl.SearchByType).Methods("GET")
 	route.HandleFunc("/price", ctrl.SortByPrice).Methods("GET")
+	route.HandleFunc("/type", ctrl.SortByType).Methods("GET")
 	route.HandleFunc("/popular", ctrl.PopularVehicle).Methods("GET")
 	route.HandleFunc("/register", ctrl.AddData).Methods("POST")
 	route.HandleFunc("/delete/{id}", middleware.Do(ctrl.Delete, "admin", middleware.CheckAuth)).Methods("DELETE")

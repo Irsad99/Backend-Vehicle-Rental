@@ -80,6 +80,20 @@ func (ctrl *vehicle_ctrl) SortByPrice(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
+func (ctrl *vehicle_ctrl) SortByType(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var getData = r.URL.Query()
+	typeVehicle := getData["category"][0]
+
+	data, err := ctrl.svc.SortByType(typeVehicle)
+	if err != nil {
+		fmt.Fprint(w, err.Error())
+	}
+
+	json.NewEncoder(w).Encode(data)
+}
+
 func (ctrl *vehicle_ctrl) PopularVehicle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
