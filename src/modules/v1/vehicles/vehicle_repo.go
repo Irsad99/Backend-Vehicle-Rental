@@ -43,11 +43,11 @@ func (repo *vehicle_repo) FindByID(id int) (*models.Vehicle, error) {
 	return &vehicles, nil
 }
 
-func (repo *vehicle_repo) Search(category ...interface{}) (*models.Vehicles, error) {
+func (repo *vehicle_repo) Search(name string, location string) (*models.Vehicles, error) {
 
 	var vehicles models.Vehicles
 
-	result := repo.db.Where("category = ? AND location = ? ", category[0], category[1]).Find(&vehicles)
+	result := repo.db.Where(`vehicles."name" LIKE ? AND vehicles."location" LIKE ?`, "%"+name+"%", "%"+location+"%").Find(&vehicles)
 
 	if result.Error != nil {
 		return nil, errors.New("data tidak dapat ditampilkan")
@@ -64,7 +64,7 @@ func (repo *vehicle_repo) SortByPrice(price int) (*models.Vehicles, error) {
 
 	var vehicles models.Vehicles
 
-	result := repo.db.Order("price desc").Where("CAST(price AS int) > ?", price).Find(&vehicles)
+	result := repo.db.Order("CAST(price AS int) desc").Where("CAST(price AS int) > ?", price).Find(&vehicles)
 
 	if result.RowsAffected < 1 {
 		return nil, errors.New("data tidak ditemukan")
@@ -82,6 +82,23 @@ func (repo *vehicle_repo) SortByType(category string) (*models.Vehicles, error) 
 	var vehicles models.Vehicles
 
 	result := repo.db.Order("vehicle_id desc").Where("category = ?", category).Find(&vehicles)
+
+	if result.RowsAffected < 1 {
+		return nil, errors.New("data tidak ditemukan")
+	}
+
+	if result.Error != nil {
+		return nil, errors.New("data tidak dapat ditampilkan")
+	}
+
+	return &vehicles, nil
+}
+
+func (repo *vehicle_repo) SortByLocation(location string) (*models.Vehicles, error) {
+
+	var vehicles models.Vehicles
+
+	result := repo.db.Order("vehicle_id desc").Where("location = ?", location).Find(&vehicles)
 
 	if result.RowsAffected < 1 {
 		return nil, errors.New("data tidak ditemukan")
@@ -158,7 +175,7 @@ func (repo *vehicle_repo) Update(id int, data *models.Vehicle) (*models.Vehicle,
 	}
 
 	getData := repo.db.First(&vehicles, id)
-	if getData.RowsAffected == 1 {
+	if getData.RowsAffected < 1 {
 		return nil, errors.New("data tidak ditemukan")
 	}
 

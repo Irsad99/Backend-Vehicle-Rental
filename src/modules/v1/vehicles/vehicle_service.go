@@ -42,9 +42,9 @@ func (svc *vehicle_service) FindByID(id int) (*helpers.Response, error) {
 	return res, nil
 }
 
-func (svc *vehicle_service) Search(category ...interface{}) (*helpers.Response, error) {
+func (svc *vehicle_service) Search(name string, location string) (*helpers.Response, error) {
 
-	result, err := svc.repo.Search(category[0], category[1])
+	result, err := svc.repo.Search(name, location)
 	if err != nil {
 		res := response.ResponseJSON(400, result)
 		res.Message = err.Error()
@@ -71,6 +71,19 @@ func (svc *vehicle_service) SortByPrice(price int) (*helpers.Response, error) {
 func (svc *vehicle_service) SortByType(category string) (*helpers.Response, error) {
 
 	result, err := svc.repo.SortByType(category)
+	if err != nil {
+		res := response.ResponseJSON(400, result)
+		res.Message = err.Error()
+		return res, nil
+	}
+
+	res := response.ResponseJSON(200, result)
+	return res, nil
+}
+
+func (svc *vehicle_service) SortByLocation(location string) (*helpers.Response, error) {
+
+	result, err := svc.repo.SortByLocation(location)
 	if err != nil {
 		res := response.ResponseJSON(400, result)
 		res.Message = err.Error()
@@ -138,8 +151,6 @@ func (svc *vehicle_service) Delete(id int) (*helpers.Response, error) {
 
 func (svc *vehicle_service) Update(id int, data *models.Vehicle) (*helpers.Response, error) {
 
-	var response helpers.Response
-
 	_, err := govalidator.ToInt(id)
 	if err != nil {
 		res := response.ResponseJSON(400, "Id yang anda masukan salah")
@@ -149,12 +160,12 @@ func (svc *vehicle_service) Update(id int, data *models.Vehicle) (*helpers.Respo
 
 	result, err := svc.repo.Update(id, data)
 	if err != nil {
-		res := response.ResponseJSON(400, &result)
+		res := response.ResponseJSON(400, result)
 		res.Message = err.Error()
 		return res, nil
 	}
 
-	res := response.ResponseJSON(200, &result)
+	res := response.ResponseJSON(200, result)
 
 	return res, nil
 }

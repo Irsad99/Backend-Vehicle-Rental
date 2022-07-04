@@ -52,10 +52,10 @@ func (ctrl *vehicle_ctrl) SearchByType(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var data = r.URL.Query()
-	dataType := string(data["category"][0])
+	dataName := string(data["name"][0])
 	dataLocation := string(data["location"][0])
 
-	result, err := ctrl.svc.Search(&dataType, &dataLocation)
+	result, err := ctrl.svc.Search(dataName, dataLocation)
 	if err != nil {
 		fmt.Fprint(w, err.Error())
 	}
@@ -63,35 +63,39 @@ func (ctrl *vehicle_ctrl) SearchByType(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(result)
 }
 
-func (ctrl *vehicle_ctrl) SortByPrice(w http.ResponseWriter, r *http.Request) {
+func (ctrl *vehicle_ctrl) SortByPLT(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var dataPrice = r.URL.Query()
-	price, err := strconv.Atoi(dataPrice["price"][0])
-	if err != nil {
-		fmt.Fprint(w, err.Error())
+	var price, _ = strconv.Atoi(r.URL.Query().Get("price"))
+	var location = r.URL.Query().Get("location")
+	var category = r.URL.Query().Get("category")
+
+	if price != 0 {
+		data, err := ctrl.svc.SortByPrice(price)
+		if err != nil {
+			fmt.Fprint(w, err.Error())
+		}
+
+		json.NewEncoder(w).Encode(data)
 	}
 
-	data, err := ctrl.svc.SortByPrice(price)
-	if err != nil {
-		fmt.Fprint(w, err.Error())
+	if location != "" {
+		data, err := ctrl.svc.SortByLocation(location)
+		if err != nil {
+			fmt.Fprint(w, err.Error())
+		}
+
+		json.NewEncoder(w).Encode(data)
 	}
 
-	json.NewEncoder(w).Encode(data)
-}
+	if category != "" {
+		data, err := ctrl.svc.SortByType(category)
+		if err != nil {
+			fmt.Fprint(w, err.Error())
+		}
 
-func (ctrl *vehicle_ctrl) SortByType(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	var getData = r.URL.Query()
-	typeVehicle := getData["category"][0]
-
-	data, err := ctrl.svc.SortByType(typeVehicle)
-	if err != nil {
-		fmt.Fprint(w, err.Error())
+		json.NewEncoder(w).Encode(data)
 	}
-
-	json.NewEncoder(w).Encode(data)
 }
 
 func (ctrl *vehicle_ctrl) PopularVehicle(w http.ResponseWriter, r *http.Request) {
