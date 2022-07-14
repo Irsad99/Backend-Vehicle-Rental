@@ -23,13 +23,13 @@ func CheckAuth(role string, next http.HandlerFunc) http.HandlerFunc {
 
 		token := strings.Replace(headerToken, "Bearer ", "", -1)
 
-		checkToken, err := helpers.CheckToken(token, role)
+		check, err := helpers.CheckToken(token, role)
 		if err != nil {
 			response.ResponseJSON(401, "Token Salah, Silahkan login kembali").Send(w)
 			return
 		}
 
-		if !checkToken {
+		if !check {
 			response.ResponseJSON(401, "Anda Bukan Admin").Send(w)
 			return
 		}
