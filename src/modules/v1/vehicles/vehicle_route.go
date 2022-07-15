@@ -14,12 +14,12 @@ func New(rt *mux.Router, db *gorm.DB) {
 	svc := NewService(repo)
 	ctrl := NewCtrl(svc)
 
-	route.HandleFunc("/", ctrl.GetAll).Methods("GET")
-	route.HandleFunc("/product", ctrl.GetByID).Methods("GET")
-	route.HandleFunc("/search", ctrl.SearchByType).Methods("GET")
-	route.HandleFunc("/sort", ctrl.SortByPLT).Methods("GET")
+	route.HandleFunc("/", middleware.Do(ctrl.GetAll, "admin", middleware.CheckAuth)).Methods("GET")
+	route.HandleFunc("/product", middleware.Do(ctrl.GetByID, "user", middleware.CheckAuth)).Methods("GET")
+	route.HandleFunc("/search", middleware.Do(ctrl.SearchByType, "user", middleware.CheckAuth)).Methods("GET")
+	route.HandleFunc("/sort", middleware.Do(ctrl.SortByPLT, "user", middleware.CheckAuth)).Methods("GET")
 	route.HandleFunc("/popular", ctrl.PopularVehicle).Methods("GET")
-	route.HandleFunc("/register", ctrl.AddData).Methods("POST")
+	route.HandleFunc("/add", middleware.Do(ctrl.Delete, "admin", middleware.CheckAuth)).Methods("POST")
 	route.HandleFunc("/delete/{id}", middleware.Do(ctrl.Delete, "admin", middleware.CheckAuth)).Methods("DELETE")
-	route.HandleFunc("/update", ctrl.Update).Methods("PUT")
+	route.HandleFunc("/update", middleware.Do(ctrl.Update, "admin", middleware.CheckAuth)).Methods("PUT")
 }
