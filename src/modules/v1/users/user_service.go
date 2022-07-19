@@ -61,6 +61,7 @@ func (svc *user_service) Save(data *models.User) (*helpers.Response, error) {
 	}
 
 	data.Password = hsPass
+	data.Role = "user"
 	result, err := svc.repo.Add(data)
 	if err != nil {
 		res := response.ResponseJSON(400, result)
