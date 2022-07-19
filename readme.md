@@ -1,5 +1,8 @@
 <h1 align="center">Vehicle Rental App Backend</h1>
-![Golang](https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Go_Logo_Blue.svg/2560px-Go_Logo_Blue.svg.png)
+<p align="center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Go_Logo_Blue.svg/2560px-Go_Logo_Blue.svg.png" width="400px" alt="Golang.jpg" /></p>
+<p align="center">
+    <a href="https://golang.org/" target="blank">More about Golang</a>
+</p>
 
 ## 🔗 Description
 This Backend Application is used for vehicle rental systems such as car rental, motorbikes, and bicycles. In the application, users can add, change, delete, and read the data of the vehicle they want to rent. In addition, users can also see the rental history. This application was built using the Golang programming language with the Gorilla / Mux Framework and uses GORM, a Database that is used using PostgreSQL and deployed on the Heroku website.
