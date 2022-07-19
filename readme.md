@@ -48,7 +48,7 @@ This Backend Application is used for vehicle rental systems such as car rental, 
 
 ```sh
   APP_PORT= Your Port
-  JWT_KETS= Your Secret Keys
+  JWT_KEYS= Your Secret Keys
 
   DB_USER = Your DB User
   DB_HOST = Your DB Host
@@ -80,6 +80,10 @@ This Backend Application is used for vehicle rental systems such as car rental, 
 ## 💻 Deploy
 
 Link Deploy : https://myrentalbackend.herokuapp.com/
+
+## 💻 End Point
+
+Link End Point : https://s.id/EndPointVehicleRental
 
 ## 🚀 About Me
 
