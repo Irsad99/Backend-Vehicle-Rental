@@ -40,7 +40,8 @@ This Backend Application is used for vehicle rental systems such as car rental, 
 * Clone the project
 
 ```sh
-  git clone https://github.com/Irsad99/BackendGo.git
+  git clone https://github.com/Irsad99/Backend-Vehicle-Rental.git (HTTPS)
+  git clone git@github.com:Irsad99/Backend-Vehicle-Rental.git (SSH)
 ```
 
 * Add Env
