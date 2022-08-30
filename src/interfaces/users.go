@@ -7,6 +7,7 @@ import (
 
 type UserRepo interface {
 	FindAll() (*models.Users, error)
+	FindById(id int) (*models.User, error)
 	FindByEmail(email string) (*models.User, error)
 	Add(data *models.User) (*models.User, error)
 	Delete(id int) (*models.User, error)
@@ -15,6 +16,7 @@ type UserRepo interface {
 
 type UserService interface {
 	FindAll() (*helpers.Response, error)
+	FindById(id int) (*helpers.Response, error)
 	FindByEmail(email string) (*helpers.Response, error)
 	Save(data *models.User) (*helpers.Response, error)
 	Delete(id int) (*helpers.Response, error)

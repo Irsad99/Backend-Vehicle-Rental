@@ -10,7 +10,6 @@ import (
 )
 
 var response helpers.Response
-
 type user_repo struct {
 	db *gorm.DB
 }
@@ -24,6 +23,19 @@ func (repo *user_repo) FindAll() (*models.Users, error) {
 	var users models.Users
 
 	result := repo.db.Order("user_id desc").Find(&users)
+
+	if result.Error != nil {
+		return nil, errors.New("data tidak dapat ditampilkan")
+	}
+
+	return &users, nil
+}
+
+func (repo *user_repo) FindById(id int) (*models.User, error) {
+
+	var users models.User
+
+	result := repo.db.First(&users, id)
 
 	if result.Error != nil {
 		return nil, errors.New("data tidak dapat ditampilkan")

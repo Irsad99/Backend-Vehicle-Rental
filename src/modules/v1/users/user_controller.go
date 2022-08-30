@@ -2,6 +2,7 @@ package users
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -23,6 +24,23 @@ func (ctrl *user_ctrl) GetAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	data, err := ctrl.svc.FindAll()
+	if err != nil {
+		response.ResponseJSON(400, "Tidak dapat menampilkan data").Send(w)
+	}
+
+	json.NewEncoder(w).Encode(data)
+}
+
+func (ctrl *user_ctrl) GetByID(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var dataId = r.URL.Query()
+	id, err := strconv.Atoi(dataId["id"][0])
+	if err != nil {
+		fmt.Fprint(w, err.Error())
+	}
+
+	data, err := ctrl.svc.FindById(id)
 	if err != nil {
 		response.ResponseJSON(400, "Tidak dapat menampilkan data").Send(w)
 	}
